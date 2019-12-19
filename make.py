@@ -47,6 +47,7 @@ class Arty(Board):
         from litex.build.openocd import OpenOCD
         prog = OpenOCD("prog/openocd_xilinx.cfg",
             flash_proxy_basename="prog/bscan_spi_xc7a35t.bit")
+            # flash_proxy_basename="prog/bscan_spi_xc7a100t.bit")
         prog.set_flash_proxy_dir(".")
         for filename, base in flash_regions.items():
             base = int(base, 16)

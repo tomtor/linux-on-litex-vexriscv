@@ -67,7 +67,7 @@ dts += """
 			i-tlb-size = <0x20>;
 			mmu-type = "riscv,sv32";
 			reg = <0x0>;
-			riscv,isa = "rv32ima";
+			riscv,isa = "rv32imac";
 			sifive,itim = <0x1>;
 			status = "okay";
 			tlb-split;
