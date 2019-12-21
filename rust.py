@@ -100,9 +100,10 @@ class SoCLinux(SoCCore):
             integrated_rom_size=0x8000,
             integrated_main_ram_size=0x02000000, # 32MB
             integrated_main_ram_init=get_mem_data({
-                "buildroot/Image":         "0x00000000",
-                "buildroot/rootfs.cpio":   "0x00800000",
-                "buildroot/rv32.dtb":      "0x01000000"
+                "litex/litex.bin": "0x00000000",
+                # "buildroot/Image":         "0x00000000",
+                # "buildroot/rootfs.cpio":   "0x00800000",
+                # "buildroot/rv32.dtb":      "0x01000000"
                 }, "little") if init_memories else [])
         self.add_constant("SIM", None)
 
@@ -169,7 +170,7 @@ def main():
     sim_config = SimConfig(default_clk="sys_clk")
     sim_config.add_module("serial2console", "serial")
     if args.with_ethernet:
-        sim_config.add_module("ethernet", "eth", args={"interface": "tap0", "ip": "192.168.0.88"})
+        sim_config.add_module("ethernet", "eth", args={"interface": "tap0", "ip": "192.168.1.100"})
 
     for i in range(2):
         soc = SoCLinux(i!=0, args.with_ethernet)
