@@ -6,9 +6,14 @@ run: litex.bin
 	#(cd ..; ./rust.py --trace --trace-start=1076000 --trace-end=1100000)
 
 litex.bin: $(ELF) $(ELF_REL)
+	riscv64-unknown-elf-objcopy -O binary $(ELF_REL) $@
+
+size: litex.bin
 	size $(ELF)
 	size $(ELF_REL)
-	riscv64-unknown-elf-objcopy -O binary $(ELF_REL) $@
+
+fmt:
+	cargo fmt
 
 $(ELF_REL): src/main.rs
 	cargo build --release
