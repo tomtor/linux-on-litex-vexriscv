@@ -1,15 +1,16 @@
 #![no_std]
 #![no_main]
 
-extern crate panic_halt;
+use core::panic::PanicInfo;
 
+use core::fmt::Write;
 use core::ptr::{read_volatile, write_volatile};
 use core::str;
-use core::fmt::Write;
 
-use heapless::String;
 use heapless::consts::*;
+use heapless::String;
 
+use riscv::register::time;
 use riscv_rt::entry;
 
 #[entry]
@@ -19,11 +20,15 @@ fn main() -> ! {
     for i in 1..10 {
         // hprint(& String::<U10>::from(i as u32)); hprint("\n");
         let mut s = String::<U32>::new();
-        write!(&mut s, "i: {} 1/i: {}\n", i, 1.0 / i as f64).unwrap();
+        write!(&mut s, "i: {} 1/i: {}\n", i, 1.0 / i as f32).unwrap();
+        hprint(&s);
+        s.clear();
+        write!(&mut s, "{}\n", time::read64()).unwrap();
         hprint(&s);
     }
-    
-    loop {}
+    panic!("test");
+
+    // loop {}
 }
 
 /* uart */
@@ -44,5 +49,16 @@ fn hprint(s: &str) {
     for c in s.bytes() {
         while uart_txfull_read() {}
         uart_rxtx_write(c);
+    }
+}
+
+#[panic_handler]
+fn panic(panic_info: &PanicInfo) -> ! {
+    hprint("\npanic!\n");
+    let mut s = String::<U64>::new();
+    write!(&mut s, "{}", panic_info).ok();
+    hprint(&s);
+    loop {
+        // atomic::compiler_fence(Ordering::SeqCst);
     }
 }

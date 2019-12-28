@@ -1,10 +1,17 @@
 ELF=target/riscv32imac-unknown-none-elf/debug/litex 
+ELF_REL=target/riscv32imac-unknown-none-elf/release/litex 
 
 run: litex.bin
-	(cd ..; ./rust.py --trace --trace-start=1076000 --trace-end=1100000)
+	(cd ..; ./rust.py)
+	#(cd ..; ./rust.py --trace --trace-start=1076000 --trace-end=1100000)
 
-litex.bin: $(ELF)
-	riscv64-unknown-elf-objcopy -O binary $(ELF) $@
+litex.bin: $(ELF) $(ELF_REL)
+	size $(ELF)
+	size $(ELF_REL)
+	riscv64-unknown-elf-objcopy -O binary $(ELF_REL) $@
+
+$(ELF_REL): src/main.rs
+	cargo build --release
 
 $(ELF): src/main.rs
 	cargo build

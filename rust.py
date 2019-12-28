@@ -119,6 +119,7 @@ class SoCLinux(SoCCore):
         self.submodules.emulator_ram = wishbone.SRAM(0x4000, init=emulator_rom)
         self.register_mem("emulator_ram", self.mem_map["emulator_ram"], self.emulator_ram.bus, 0x4000)
         self.add_constant("ROM_BOOT_ADDRESS",self.mem_map["emulator_ram"])
+        #self.add_constant("ROM_BOOT_ADDRESS",0xc0000000)
 
         # serial
         self.submodules.uart_phy = uart.RS232PHYModel(platform.request("serial"))
