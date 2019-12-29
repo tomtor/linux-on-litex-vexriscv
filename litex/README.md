@@ -73,5 +73,50 @@ Build the new root: https://github.com/tomtor/linux-on-litex-vexriscv#generating
 Copy the result images (`Image` and `rootfs.cpio` to your `linux-on-litex-vexriscv/buildroot` directory
 and test again with `./sim.py`).
 
-## Building a new root with the C Riscv extension ##
+## Using Rust in Linux
 
+Currently there is no Rust `std` support for Riscv32. A workaround is to build a `nostd` Rust library and link this with a simple `C` main program. See the `rustlib` directory in `https://github.com/tomtor/linux-on-litex-vexriscv` for a minimal demo.
+
+## Boot a Rust embedded program instead of the Linux image
+
+This crate creates a simple demo program which you can boot as a replacement for the standard Linux image.
+
+Run `./rust.py` to experiment with it in a simulation.
+
+```
+--============= Liftoff! ===============--
+VexRiscv Machine Mode software built Dec 28 2019 19:48:43
+--========== Booting Linux =============--
+Hello World
+i: 1 1/i: 1
+533379
+i: 2 1/i: 0.5
+540759
+i: 3 1/i: 0.33333334
+549040
+i: 4 1/i: 0.25
+556395
+i: 5 1/i: 0.2
+563675
+i: 6 1/i: 0.16666667
+571637
+i: 7 1/i: 0.14285715
+579679
+i: 8 1/i: 0.125
+587093
+i: 9 1/i: 0.11111111
+595013
+100
+200
+300
+400
+500
+600
+700
+800
+900
+[-450, -400, -350, -300, -250, -200, -150, -100, -50, 0, 50, 100, 150, 200, 250, 300, 350, 400, 450] in 4054
+
+panic!
+panicked at 'End of main()', src/main.rs:63:5
+```
