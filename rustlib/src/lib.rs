@@ -5,34 +5,38 @@ use core::panic::PanicInfo;
 extern crate cty;
 
 extern "C" {
-        fn printf(fmt: *const cty::c_char, ...) -> cty::c_int;
+    fn printf(fmt: *const cty::c_char, ...) -> cty::c_int;
 }
 
 #[no_mangle]
 pub extern "C" fn add_two(a: i32) -> i32 {
     cprintf("add_two\n");
-    // panic!("p");
+    panic!("p");
     a + 2
 }
 
-fn cprintf(s: &str)
-{
+fn cprintf(s: &str) {
     unsafe {
-      printf("%.*s\0".as_bytes().as_ptr(), s.len(), s.as_bytes().as_ptr());
+        printf("%.*s\0".as_bytes().as_ptr(), s.len(), s.as_bytes().as_ptr());
     }
 }
 
 #[panic_handler]
 fn panic(panic_info: &PanicInfo) -> ! {
     cprintf("\npanic!\n");
-    if let Some(s) = panic_info.payload().downcast_ref::<&str>() {
-        cprintf(s);
-        cprintf("\n");
+    if let Some(loc) = panic_info.location() {
+        let file = loc.file();
+        let linenr = loc.line();
+        unsafe {
+            printf(
+                "File: %.*s Line: %d\n\0".as_bytes().as_ptr(),
+                file.len(),
+                file.as_bytes().as_ptr(),
+                linenr,
+            );
+        }
     }
-    // cprintf("\npanic2!\n");
-    loop {
-        // atomic::compiler_fence(Ordering::SeqCst);
-    }
+    loop {}
 }
 
 /*
