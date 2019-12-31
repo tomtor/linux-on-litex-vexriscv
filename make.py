@@ -150,6 +150,28 @@ class ULX3S(Board):
     def load(self):
         os.system("ujprog build/ulx3s/gateware/top.svf")
 
+# OrangeCrab support ------------------------------------------------------------------------------------
+
+class OrangeCrab(Board):
+    def __init__(self):
+        from litex_boards.targets import orangecrab
+        Board.__init__(self, orangecrab.BaseSoC, {"serial"})
+
+    def load(self):
+        os.system("openocd -f openocd/ecp5-versa5g.cfg -c \"transport select jtag; init; svf build/gateware/top.svf; exit\"")
+
+# De10Lite support ------------------------------------------------------------------------------------
+
+class De10Lite(Board):
+    def __init__(self):
+        from litex_boards.targets import de10lite
+        Board.__init__(self, de10lite.BaseSoC, {"serial"})
+
+    def load(self):
+        from litex.build.altera import USBBlaster
+        prog = USBBlaster()
+        prog.load_bitstream("build/de10lite/gateware/top.sof")
+
 # De0Nano support ------------------------------------------------------------------------------------
 
 class De0Nano(Board):
@@ -176,8 +198,10 @@ supported_boards = {
     # Lattice
     "versa_ecp5":   VersaECP5,
     "ulx3s":        ULX3S,
+    "orangecrab":   OrangeCrab,
     # Altera/Intel
     "de0nano":      De0Nano,
+    "de10lite":     De10Lite,
 }
 
 def main():
@@ -205,7 +229,7 @@ def main():
     for board_name in board_names:
         board = supported_boards[board_name]()
         soc_kwargs = {}
-        if board_name in ["versa_ecp5", "ulx3s"]:
+        if board_name in ["versa_ecp5", "ulx3s", "orangecrab"]:
             soc_kwargs["toolchain"] = "trellis"
             soc_kwargs["cpu_variant"] = "linux+no-dsp"
         if board_name in ["de0nano"]:
