@@ -1,6 +1,10 @@
 #![no_std]
 
+use core::fmt::Write;
 use core::panic::PanicInfo;
+
+use heapless::consts::*;
+use heapless::String;
 
 extern crate cty;
 
@@ -8,10 +12,14 @@ extern "C" {
     fn printf(fmt: *const cty::c_char, ...) -> cty::c_int;
 }
 
+extern "C" {
+    fn write(fd: cty::c_int, p: *const cty::c_char, len: cty::size_t) -> cty::c_int;
+}
+
 #[no_mangle]
 pub extern "C" fn add_two(a: i32) -> i32 {
     cprintf("add_two\n");
-    panic!("p");
+    // panic!("p");
     a + 2
 }
 
@@ -23,25 +31,10 @@ fn cprintf(s: &str) {
 
 #[panic_handler]
 fn panic(panic_info: &PanicInfo) -> ! {
-    cprintf("\npanic!\n");
-    if let Some(loc) = panic_info.location() {
-        let file = loc.file();
-        let linenr = loc.line();
-        unsafe {
-            printf(
-                "File: %.*s Line: %d\n\0".as_bytes().as_ptr(),
-                file.len(),
-                file.as_bytes().as_ptr(),
-                linenr,
-            );
-        }
+    let mut s: String<U128> = String::new();
+    writeln!(s, "{}", panic_info).ok();
+    unsafe {
+        write(2, s.as_bytes().as_ptr(), s.len());
     }
     loop {}
 }
-
-/*
-#[test]
-fn it_works() {
-    assert_eq!(4, add_two(2));
-}
-*/
